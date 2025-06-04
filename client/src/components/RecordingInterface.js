@@ -143,9 +143,8 @@ const RecordingInterface = () => {
                 mediaRecorder.start();
                 setIsRecording(true);
             })
-            .catch(err => console.error('Erreur lors de l accès au micro:', err));
+            .catch(err => console.error('Erreur lors de l\'accès au micro:', err));
     };
-
 
     const stopRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
@@ -173,13 +172,10 @@ const RecordingInterface = () => {
         }
     };
 
-
-
     const reRecord = () => {
         setAudioURL(null);
         startRecording();
     };
-
 
     const nextSentence = () => {
         if (currentSentenceIndex < (state?.numSentences || 5) - 1) {

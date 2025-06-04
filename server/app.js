@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const recordingRoutes = require('./routes/recordings'); // Assurez-vous que le chemin est correct
+const authRoutes = require('./routes/auth');
+const recordingRoutes = require('./routes/recordings');
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// Utilisez le routeur pour les enregistrements
+app.use('/api/auth', authRoutes);
 app.use('/api/recordings', recordingRoutes);
 
 const PORT = process.env.PORT || 5000;

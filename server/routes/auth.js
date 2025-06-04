@@ -13,7 +13,7 @@ router.post('/consent', (req, res) => {
       [age, gender, consent],
       function (err) {
         if (err) {
-          console.error('Erreur loauth.jsrs de l\'insertion:', err);
+          console.error('Erreur lors de l\'insertion:', err);
           return res.status(500).json({ error: 'Erreur serveur' });
         }
         res.json({ message: 'Consentement enregistré', id: this.lastID });
