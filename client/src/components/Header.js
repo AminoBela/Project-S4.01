@@ -1,6 +1,16 @@
+/**
+ * fichier : Header.js
+ * Composant React pour l'en-tête de l'application
+ */
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * Composant Header, affiche le logo et le titre de l'application
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Header = () => {
     return (
         <Link to="/" style={{ textDecoration: 'none' }}>

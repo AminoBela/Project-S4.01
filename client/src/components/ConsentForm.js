@@ -1,7 +1,18 @@
+/**
+ * fichier : ConsentForm.js
+ * COmposant React pour le formulaire de consentement
+ * Il permet à l'utilisateur de saisir son âge, son genre, le nombre de phrases à enregistrer et de donner son consentement.
+ */
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Composant ConsentForm
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const ConsentForm = () => {
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
@@ -9,6 +20,11 @@ const ConsentForm = () => {
     const [numSentences, setNumSentences] = useState(3);
     const navigate = useNavigate();
 
+    /**
+     * Fonction pour gérer la soumission du formulaire
+     * @param e
+     * @returns {Promise<void>}
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!age || !gender || !consent || !numSentences) {
@@ -24,16 +40,29 @@ const ConsentForm = () => {
         }
     };
 
+    /**
+     * Fonction pour gérer l'incrémentation et la décrémentation des champs numériques
+     * @param setter
+     * @param value
+     * @param max
+     */
     const handleIncrement = (setter, value, max) => {
         const num = parseInt(value) || 0;
         if (num < max) setter(num + 1);
     };
 
+    /**
+     * Fonction pour gérer la décrémentation des champs numériques
+     * @param setter
+     * @param value
+     * @param min
+     */
     const handleDecrement = (setter, value, min) => {
         const num = parseInt(value) || 0;
         if (num > min) setter(num - 1);
     };
 
+    // Rendu du formulaire de consentement
     return (
         <div className="consent-form-container">
             <h2>Formulaire de consentement</h2>

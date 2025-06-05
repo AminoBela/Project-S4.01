@@ -1,8 +1,20 @@
+/**
+ * FIchier : RecordingInterface.js
+ * Composant React pour l'interface d'enregistrement audio
+ * Il permet à l'utilisateur d'enregistrer sa voix en lisant des phrases prédéfinies.
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+/**
+ * Composant RecordingInterface
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const RecordingInterface = () => {
+
     const { state } = useLocation();
     const navigate = useNavigate();
     const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
@@ -14,6 +26,7 @@ const RecordingInterface = () => {
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
 
+    // Phrases de Lobato (narrateur de Formule 1)
     const lobatoPhrases = [
         "¡Atención llegamos a la recta de atrás! Fernando a por los McLaren. ¡VELOCIDAD TOTAL! ¡Wau! Tercero Fernando.",
         "¡No queremos ver esas imágenes, lo que queremos ver es la batalla de Fernando Alonso por el primer puesto!",
@@ -105,6 +118,8 @@ const RecordingInterface = () => {
         "¡Pollitooo la que has liadooo!",
         "En casa del ciego, el tuerto es el rey."
     ];
+
+    // Initialisation des phrases et enregistrements
 useEffect(() => {
         const numSentences = state?.numSentences || 5;
         const generateSentences = () => {
@@ -120,6 +135,7 @@ useEffect(() => {
         setIsSaved(new Array(numSentences).fill(false));
     }, [state?.numSentences]);
 
+    // Fonction pour démarrer l'enregistrement
     const startRecording = () => {
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
@@ -148,6 +164,7 @@ useEffect(() => {
             .catch(err => console.error('Erreur lors de l\'accès au micro:', err));
     };
 
+    // Fonction pour arrêter l'enregistrement
     const stopRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
@@ -155,6 +172,7 @@ useEffect(() => {
         }
     };
 
+    // Fonction pour sauvegarder l'enregistrement
     const saveRecording = async () => {
         if (recordings[currentSentenceIndex] && !isSaved[currentSentenceIndex]) {
             const formData = new FormData();
@@ -178,6 +196,7 @@ useEffect(() => {
         }
     };
 
+    // Fonction pour réenregistrer la phrase actuelle
     const reRecord = () => {
         setAudioURL(null);
         setIsSaved(prev => {
@@ -188,6 +207,7 @@ useEffect(() => {
         startRecording();
     };
 
+    // Fonction pour passer à la phrase suivante ou quitter si c'est la dernière
     const nextSentence = () => {
         if (currentSentenceIndex < (state?.numSentences || 5) - 1) {
             setCurrentSentenceIndex(prev => prev + 1);
@@ -202,6 +222,7 @@ useEffect(() => {
         }
     };
 
+    // Fonction pour quitter l'interface d'enregistrement et sauvegarder les enregistrements non sauvegardés
     const earlyExit = async () => {
         for (let i = 0; i < recordings.length; i++) {
             if (recordings[i] && !isSaved[i]) {
@@ -229,6 +250,9 @@ useEffect(() => {
 
     const progress = ((currentSentenceIndex + 1) / (state?.numSentences || 5)) * 100;
 
+    /**
+     * Rendu de l'interface d'enregistrement
+     */
     return (
         <div className="recording-page-container">
             <h2>Enregistrement de la voix</h2>

@@ -1,3 +1,7 @@
+/**
+ * FIchier : RecordingInterface.js
+ * Composant React pour l'interface d'enregistrement audio
+ */
 import React from 'react';
 
 const Home = () => {
