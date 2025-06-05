@@ -49,9 +49,10 @@ docker-compose up --build
 ## Fonctionnement en local
 
 **Cloner le dépôt** :
-   ``bash
+   ```bash
    git clone git@github.com:AminoBela/Project-S4.01.git
-   cd Project-S4.01``
+   cd Project-S4.01
+  ```
 
 ### Installer les dépendances :
 
