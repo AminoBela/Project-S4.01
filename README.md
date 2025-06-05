@@ -1,4 +1,4 @@
-# Application de Collecte Audio
+# Application collecte audio
 
 Ce projet est une application web développée dans le cadre de S4-DACS-01-1 pour collecter des enregistrements audio d'utilisateurs lisant des phrases prédéfinies. Elle est conçue pour être conviviale, anonyme, et conteneurisée avec Docker pour faciliter le déploiement.
 
