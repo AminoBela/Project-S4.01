@@ -1,24 +1,21 @@
+version: '3.8'
+
 services:
-  client:
-    build: ./client
-    ports:
-      - "3000:3000"
-    depends_on:
-      server:
-        condition: service_started
-    networks:
-      - app-network
-  server:
+  backend:
     build: ./server
     ports:
       - "5000:5000"
     volumes:
       - ./server/uploads:/app/uploads
-      - ./database:/app/database
+      - ./server/recordings.db:/app/recordings.db
     environment:
-      - NODE_ENV=docker
-    networks:
-      - app-network
-networks:
-  app-network:
-    driver: bridge
+      - NODE_ENV=production
+
+  frontend:
+    build: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend

@@ -10,6 +10,7 @@ const RecordingInterface = () => {
     const [audioURL, setAudioURL] = useState(null);
     const [sentences, setSentences] = useState([]);
     const [recordings, setRecordings] = useState([]);
+    const [isSaved, setIsSaved] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
 
@@ -104,8 +105,7 @@ const RecordingInterface = () => {
         "¡Pollitooo la que has liadooo!",
         "En casa del ciego, el tuerto es el rey."
     ];
-
-    useEffect(() => {
+useEffect(() => {
         const numSentences = state?.numSentences || 5;
         const generateSentences = () => {
             const result = [];
@@ -116,6 +116,8 @@ const RecordingInterface = () => {
             return result.slice(0, numSentences);
         };
         setSentences(generateSentences());
+        setRecordings(new Array(numSentences).fill(null));
+        setIsSaved(new Array(numSentences).fill(false));
     }, [state?.numSentences]);
 
     const startRecording = () => {
@@ -154,17 +156,21 @@ const RecordingInterface = () => {
     };
 
     const saveRecording = async () => {
-        if (recordings[currentSentenceIndex]) {
+        if (recordings[currentSentenceIndex] && !isSaved[currentSentenceIndex]) {
             const formData = new FormData();
             formData.append('audio', recordings[currentSentenceIndex], `recording_${currentSentenceIndex}.wav`);
+            formData.append('sentence_index', currentSentenceIndex);
+            formData.append('age', state?.age || '');
+            formData.append('gender', state?.gender || '');
             try {
-                await axios.post('http://localhost:5000/api/recordings', formData, {
+                const response = await axios.post('http://localhost:5000/api/recordings', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                setRecordings(prev => {
-                    const newRecordings = [...prev];
-                    newRecordings[currentSentenceIndex] = null; // Marque comme sauvegardé
-                    return newRecordings;
+                console.log(response.data.message);
+                setIsSaved(prev => {
+                    const newIsSaved = [...prev];
+                    newIsSaved[currentSentenceIndex] = true;
+                    return newIsSaved;
                 });
             } catch (error) {
                 console.error('Erreur lors de la sauvegarde:', error);
@@ -174,6 +180,11 @@ const RecordingInterface = () => {
 
     const reRecord = () => {
         setAudioURL(null);
+        setIsSaved(prev => {
+            const newIsSaved = [...prev];
+            newIsSaved[currentSentenceIndex] = false;
+            return newIsSaved;
+        });
         startRecording();
     };
 
@@ -181,6 +192,11 @@ const RecordingInterface = () => {
         if (currentSentenceIndex < (state?.numSentences || 5) - 1) {
             setCurrentSentenceIndex(prev => prev + 1);
             setAudioURL(null);
+            setIsSaved(prev => {
+                const newIsSaved = [...prev];
+                newIsSaved[currentSentenceIndex] = false; // Réinitialiser pour la prochaine phrase
+                return newIsSaved;
+            });
         } else {
             navigate('/');
         }
@@ -188,12 +204,20 @@ const RecordingInterface = () => {
 
     const earlyExit = async () => {
         for (let i = 0; i < recordings.length; i++) {
-            if (recordings[i]) {
+            if (recordings[i] && !isSaved[i]) {
                 const formData = new FormData();
                 formData.append('audio', recordings[i], `recording_${i}.wav`);
+                formData.append('sentence_index', i);
+                formData.append('age', state?.age || '');
+                formData.append('gender', state?.gender || '');
                 try {
                     await axios.post('http://localhost:5000/api/recordings', formData, {
                         headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    setIsSaved(prev => {
+                        const newIsSaved = [...prev];
+                        newIsSaved[i] = true;
+                        return newIsSaved;
                     });
                 } catch (error) {
                     console.error(`Erreur lors de la sauvegarde de l'enregistrement ${i}:`, error);
@@ -213,6 +237,7 @@ const RecordingInterface = () => {
                     <>
                         <p className="fixed-phrase">Phrase : {sentences[currentSentenceIndex]}</p>
                         <p>Progression : Phrase {currentSentenceIndex + 1} sur {state?.numSentences || 5}</p>
+                        <p>Statut : {isSaved[currentSentenceIndex] ? 'Sauvegardé' : 'Non sauvegardé'}</p>
                         <div style={{ width: '100%', background: '#333', height: '10px', borderRadius: '5px', margin: '10px 0' }}>
                             <div style={{ width: `${progress}%`, background: '#00f2fe', height: '100%', borderRadius: '5px', transition: 'width 0.3s' }}></div>
                         </div>
@@ -244,7 +269,7 @@ const RecordingInterface = () => {
                                 <span className="icon record-icon"></span>
                                 Réenregistrer
                             </button>
-                            <button onClick={saveRecording} className="button-with-icon">
+                            <button onClick={saveRecording} className="button-with-icon" disabled={isSaved[currentSentenceIndex]}>
                                 <span className="icon submit-icon"></span>
                                 Sauvegarder
                             </button>
